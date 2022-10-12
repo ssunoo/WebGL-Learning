@@ -3,6 +3,7 @@
 *.pptx
 *.mov
 *.mp4
+*.DS_Store
 submit/
 doc/
 inclass/
