@@ -152,7 +152,6 @@ var modelMatrix2 = new Matrix4();
 var frontViewMatrix = new Matrix4();
 var backViewMatrix = new Matrix4();
 var pespProjMatrix = new Matrix4();
-var pespProjMatrix2 = new Matrix4();
 var orthProjMatrix = new Matrix4();
 var transformMat = new Matrix4();
 var mouseLastX, mouseLastY;
@@ -186,10 +185,9 @@ function main(){
     gl.enable(gl.SCISSOR_TEST);//enable scissor test to only apply background clear on one viewport
 
     frontViewMatrix.setLookAt(0, 0, -10, 0, 0, 100, 0, 1, 0);
-    backViewMatrix.setLookAt(0, 0, 10, 0, 0, -100, 0, 1, 0)
+    backViewMatrix.setLookAt(0, 0, 20, 0, 15, -100, 0, 1, 0);
     pespProjMatrix.setPerspective(30, canvas.width/canvas.height, 1, 100);
-    pespProjMatrix2.setPerspective(30, 2 * canvas.width/canvas.height, 1, 100);
-    orthProjMatrix.setOrtho(-2, 2, -2, 2, -100, 100)
+    orthProjMatrix.setOrtho(-2, 2, -2, 2, -100, 100);
 
     canvas.onmousedown = function(ev){mouseDown(ev)};
     canvas.onmousemove = function(ev){mouseMove(ev)};
@@ -282,7 +280,7 @@ function draw(x, y){
                     0.5, 0.5, 0.5,
                     orthProjMatrix, frontViewMatrix, modelMatrix1, modelMatrix2 );
     
-    drawOneViewport(gl, 0, canvas.height / 2, canvas.width, canvas.height / 2,
+    drawOneViewport(gl, 0, canvas.height / 2, canvas.width, canvas.height,
                     0.75, 0.75, 0.75,
-                    pespProjMatrix2, backViewMatrix, modelMatrix1, modelMatrix2 );
+                    pespProjMatrix, backViewMatrix, modelMatrix1, modelMatrix2 );
 }
