@@ -233,7 +233,7 @@ function draw(){
     //model Matrix (part of the mvp matrix)
     modelMatrix.setRotate(angleY, 1, 0, 0);//for mouse rotation
     modelMatrix.rotate(angleX, 0, 1, 0);//for mouse rotation
-    modelMatrix.translate(0, -1.2, 0);
+    modelMatrix.translate(0, 0, 0);
     modelMatrix.scale(objScale, objScale, objScale);
     //mvp: projection * view * model matrix  
     mvpMatrix.setPerspective(30, 1, 1, 100);
