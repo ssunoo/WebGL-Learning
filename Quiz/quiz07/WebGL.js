@@ -231,12 +231,12 @@ async function main(){
     ////cube
     //TODO-1: create vertices for the cube whose edge length is 2.0 (or 1.0 is also fine)
     //F: Face, T: Triangle, V: vertex (XYZ)
-    cubeVertices = [ -1.0, -1.0, 1.0,  1.0, 0.0, 1.0,  0.0, 0.0, 1.0,  F1_T2_V4,  F1_T2_V5,  F1_T2_V6,   //this row for the face z = 1.0
-                    //F2_T1_V1,  F2_T1_V2,  F2_T1_V3,  F2_T2_V4,  F2_T2_V5,  F2_T2_V6,   //this row for the face x = 1.0
-                    //F3_T1_V1,  F3_T1_V2,  F3_T1_V3,  F3_T2_V4,  F3_T2_V5,  F3_T2_V6,   //this row for the face y = 1.0
-                    //F4_T1_V1,  F4_T1_V2,  F4_T1_V3,  F4_T2_V4,  F4_T2_V5,  F4_T2_V6,   //this row for the face x = -1.0
-                    //F5_T1_V1,  F5_T1_V2,  F5_T1_V3,  F5_T2_V4,  F5_T2_V5,  F5_T2_V6,   //this row for the face y = -1.0
-                    //F6_T1_V1,  F6_T1_V2,  F6_T1_V3,  F6_T2_V4,  F6_T2_V5,  F6_T2_V6,   //this row for the face z = -1.0
+    cubeVertices = [ 1.0,  1.0,  1.0, -1.0,  1.0,  1.0, -1.0, -1.0,  1.0,  1.0,  1.0,  1.0, -1.0, -1.0,  1.0,  1.0, -1.0,  1.0, 
+                     1.0,  1.0,  1.0,  1.0, -1.0,  1.0,  1.0, -1.0, -1.0,  1.0,  1.0,  1.0,  1.0, -1.0, -1.0,  1.0,  1.0, -1.0,
+                     1.0,  1.0,  1.0,  1.0,  1.0, -1.0, -1.0,  1.0, -1.0,  1.0,  1.0,  1.0, -1.0,  1.0, -1.0, -1.0,  1.0,  1.0,
+                    -1.0,  1.0,  1.0, -1.0,  1.0, -1.0, -1.0, -1.0, -1.0, -1.0,  1.0,  1.0, -1.0, -1.0, -1.0, -1.0, -1.0,  1.0,
+                    -1.0, -1.0, -1.0,  1.0, -1.0, -1.0,  1.0, -1.0,  1.0, -1.0, -1.0, -1.0,  1.0, -1.0,  1.0, -1.0, -1.0,  1.0,
+                     1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0,  1.0, -1.0,  1.0, -1.0, -1.0, -1.0,  1.0, -1.0,  1.0,  1.0, -1.0
                   ]
     cubeNormals = getNormalOnVertices(cubeVertices);
     let o = initVertexBufferForLaterUse(gl, cubeVertices, cubeNormals, null);
@@ -277,15 +277,24 @@ function draw(){
 
     //Cube (ground)
     //TODO-1: set mdlMatrix for the cube
+    mdlMatrix.setIdentity();
+    mdlMatrix.scale(2.0, 0.1, 2.0)
     drawOneObject(cube, mdlMatrix, 1.0, 0.4, 0.4);
 
     //mario
     //TODO-2: set mdlMatrix for mario
-    //drawOneObject(mario, mdlMatrix, 0.4, 1.0, 0.4);
+    mdlMatrix.setIdentity();
+    mdlMatrix.translate(-1, 0.7, -1.0);
+    mdlMatrix.scale(0.01, 0.01, 0.01);
+    drawOneObject(mario, mdlMatrix, 0.4, 1.0, 0.4);
 
     //sonic
     //TODO-3: set mdlMatrix for sonic (include rotation and movement)
-    //drawOneObject(sonic, mdlMatrix, 0.4, 0.4, 1.0);
+    mdlMatrix.setIdentity();
+    mdlMatrix.translate(moveDistance, 0.14, 0.0);
+    mdlMatrix.rotate(rotateAngle, 0.0, 1.0, 0.0);
+    mdlMatrix.scale(0.03, 0.03, 0.03);
+    drawOneObject(sonic, mdlMatrix, 0.4, 0.4, 1.0);
 }
 
 //obj: the object components
