@@ -295,12 +295,6 @@ function draw(){
                   cameraZ + newViewDir.elements[2], 
                   0, 1, 0);
 
-  let rotateMatrix2 = new Matrix4();
-  rotateMatrix2.setRotate(angleY, 1, 0, 0);//for mouse rotation
-  rotateMatrix2.rotate(angleX, 0, 1, 0);//for mouse rotation
-  var viewDir= new Vector3([cameraDirX, cameraDirY, cameraDirZ]);
-  var newViewDir = rotateMatrix.multiplyVector3(viewDir);
-
   var vpFromCamera = new Matrix4();
   vpFromCamera.setPerspective(70, 1, 1, 100);
   var viewMatrixRotationOnly = new Matrix4();
