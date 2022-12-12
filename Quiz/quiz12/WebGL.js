@@ -308,7 +308,7 @@ function draw(){
   viewMatrixRotationOnly.elements[14] = 0;
   vpFromCamera.multiply(viewMatrixRotationOnly);
 
-  drawEnvMap(vpFromCamera);
+  drawEnvMap(vpFromCamera.invert());
   drawRegularObjects(vpMatrix);//ground, mario, sonic
 
   //the sphere
@@ -363,7 +363,7 @@ function drawOneRegularObject(obj, modelMatrix, vpMatrix, colorR, colorG, colorB
 
 function drawEnvMap(vpMatrix)
 {  
-  var vpFromCameraInverse = vpMatrix.invert();
+  var vpFromCameraInverse = vpMatrix;
   // var vpFromCameraInverse = vpFromCamera.invert();
 
   //quad
@@ -722,7 +722,7 @@ function renderCubeMap(camX, camY, camZ)
   var ENV_CUBE_LOOK_UP = [
       [0.0, -1.0, 0.0],
       [0.0, -1.0, 0.0],
-      [0.0, 0.0, 1.0],
+      [0.0, 0.0,  1.0],
       [0.0, 0.0, -1.0],
       [0.0, -1.0, 0.0],
       [0.0, -1.0, 0.0]
@@ -748,7 +748,7 @@ function renderCubeMap(camX, camY, camZ)
                     ENV_CUBE_LOOK_UP[side][1],
                     ENV_CUBE_LOOK_UP[side][2]);
     drawEnvMap(vpMatrix.invert());
-    drawRegularObjects(vpMatrix);
+    drawRegularObjects(vpMatrix.invert());
   }
   
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
