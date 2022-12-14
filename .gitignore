@@ -4,6 +4,7 @@
 *.mov
 *.mp4
 *.DS_Store
+*.rar
 submit/
 doc/
 inclass/
