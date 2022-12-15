@@ -255,9 +255,20 @@ var sonicObj;
 var solarSystemObj;
 var ufoObj;
 var rotateAngle = 0;
+var earthSelfRotateAngle = 0.0
+var earthRotateAngle = 0.0;
 var fbo;
 var offScreenWidth = 256, offScreenHeight = 256; //for cubemap render
 var imgNames = ["UFO", "Uranus", "Mecury", "Rings", "Saturn", "Sun", "Jupiter", "Neptune", "Mars", "Venus", "Earth", "UFOnmap"];
+var planetSelfRotateArg = {"Uranus": 0.99726968/-0.71833, "Mecury": 0.99726968/58.6462, "Rings": 0.99726968 / 0.426, "Saturn": 0.99726968 / 0.426,
+ "Sun": 0.99726968 / 25.379995, "Jupiter": 0.99726968 / 0.41007, "Neptune": 0.99726968/0.67125, "Mars": 0.99726968/	1.02595675,
+ "Venus": 0.99726968/-243.0187, "Earth" : 1.0}
+var planetRotateArg = {"Uranus": 1.0/84.07, "Mecury": 1.0/0.241, "Rings": 1.0 / 29.45, "Saturn": 1.0 / 29.45,
+"Sun": 0.0, "Jupiter": 1.0 / 	11.8618, "Neptune": 1.0/164.9, "Mars": 1.0/	1.881,
+"Venus": 1.0/0.615, "Earth" : 1.0}
+var disToCenter = {"Uranus": -222.463, "Mecury": -82.8306, "Rings": -189.908, "Saturn": -189.908,
+"Sun": 0.0, "Jupiter": -144.346, "Neptune": -245.253, "Mars": -128.981,
+"Venus": -97.4924, "Earth" : -111.527}
 var imgpath = ["../external/UFO/textures/UFO_color2.jpg", "../external/solar-system-obj/OIP (40).jpeg", 
 "../external/solar-system-obj/download (18).jpeg", "../external/solar-system-obj/OIP (43).jpeg",
 "../external/solar-system-obj/OIP (39).jpeg", "../external/solar-system-obj/OIP (38).jpeg",
@@ -265,6 +276,7 @@ var imgpath = ["../external/UFO/textures/UFO_color2.jpg", "../external/solar-sys
 "../external/solar-system-obj/OIP (36).jpeg", "../external/solar-system-obj/OIP (37).jpeg",
 "../external/solar-system-obj/Rc86fd1d073eb8cee76c6e79ed89c15bc.png", "../external/UFO/textures/UFO_nmap.jpg"
 ];
+var solarScale = 0.5;
 var textures = {};
 var isFirst = true;
 var v = 0.05;
@@ -343,6 +355,8 @@ async function main(){
 
     var tick = function() {
       rotateAngle += 0.45;
+      earthSelfRotateAngle += 1;
+      earthRotateAngle += 0.0/(365.0 * 360.0);
       let rotateMatrix = new Matrix4();
       rotateMatrix.setRotate(angleX, 0, 1, 0);//for mouse rotation
       rotateMatrix.rotate(angleY, 1, 0, 0);//for mouse rotation
@@ -439,25 +453,21 @@ function drawRegularObjects(vpMatrix){
   ufoMdl.rotate(rotateAngle, 0, 1, 0);
   ufoMdl.scale(0.0001, 0.0001, 0.0001);
   
-  var solarMdl = new Matrix4(); 
-  solarMdl.setScale(0.5, 0.5, 0.5);
+  // var solarMdl = new Matrix4(); 
+  // solarMdl.setScale(solarScale, solarScale, solarScale);
 
   drawOneRegularObject(ufoObj, ufoMdl, vpMatrix, textures["UFO"], 0, textures["UFOnmap"]);
 
-  drawSolarSystem(vpMatrix, solarMdl);
+  drawSolarSystem(vpMatrix);
 }
 
-function drawSolarSystem(vpMatrix, modelMatrix)
+function drawSolarSystem(vpMatrix)
 {
   gl.useProgram(program);
   let mvpMatrix = new Matrix4();
   let normalMatrix = new Matrix4();
-  mvpMatrix.set(vpMatrix);
-  mvpMatrix.multiply(modelMatrix);
 
   //normal matrix
-  normalMatrix.setInverseOf(modelMatrix);
-  normalMatrix.transpose();
 
   gl.uniform3f(program.u_LightPosition, lightX, lightY, lightZ);
   gl.uniform3f(program.u_ViewPosition, cameraX, cameraY, cameraZ);
@@ -467,13 +477,26 @@ function drawSolarSystem(vpMatrix, modelMatrix)
   gl.uniform1f(program.u_shininess, 10.0);
   // gl.uniform3f(program.u_Color, colorR, colorG, colorB);
 
-  gl.uniformMatrix4fv(program.u_MvpMatrix, false, mvpMatrix.elements);
-  gl.uniformMatrix4fv(program.u_modelMatrix, false, modelMatrix.elements);
-  gl.uniformMatrix4fv(program.u_normalMatrix, false, normalMatrix.elements);
-
-
   for( let i=0; i < solarSystemObj.length; i ++ )
   {
+    mvpMatrix.set(vpMatrix);
+    var planetModelMatrix = new Matrix4();
+    // planetModelMatrix.setScale(solarScale, solarScale, solarScale);
+    var oldPos = new Vector3([disToCenter[imgNames[i + 1]], 0.0, 0.0]);
+    planetModelMatrix.rotate(planetSelfRotateArg[imgNames[i + 1]] * earthSelfRotateAngle, 0, 1 ,0);
+    var dirRotateMatrix = new Matrix4(planetModelMatrix);
+    dirRotateMatrix.rotate(-2 * planetSelfRotateArg[imgNames[i + 1]] * earthSelfRotateAngle, 0, 1 ,0)
+    var newPos = dirRotateMatrix.multiplyVector3(oldPos);
+    var delta = new Vector3([newPos.elements[0] - oldPos.elements[0], newPos.elements[1] -  oldPos.elements[1] , newPos.elements[2] - oldPos.elements[2] ]);
+    planetModelMatrix.translate(delta.elements[0], delta.elements[1], delta.elements[2]);
+    mvpMatrix.multiply(planetModelMatrix);
+    normalMatrix.setInverseOf(planetModelMatrix);
+    normalMatrix.transpose();  
+
+    gl.uniformMatrix4fv(program.u_MvpMatrix, false, mvpMatrix.elements);
+    gl.uniformMatrix4fv(program.u_modelMatrix, false, planetModelMatrix.elements);
+    gl.uniformMatrix4fv(program.u_normalMatrix, false, normalMatrix.elements);
+  
     if(imgNames[i + 1] == "Sun")  gl.uniform1i(program.u_isEmission, 1);
     else                          gl.uniform1i(program.u_isEmission, 0);
     gl.activeTexture(gl.TEXTURE0);
