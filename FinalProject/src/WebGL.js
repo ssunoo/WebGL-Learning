@@ -242,7 +242,7 @@ var angleX = 0, angleY = 0;
 var gl, canvas;
 var modelMatrix;
 var nVertex;
-var characterX = 0.0, characterY = 50.0, characterZ = 0.0;
+var characterX = -111.5, characterY = 0.6, characterZ = 0.0;
 var relcameraX = 0, relcameraY = 0.0005, relcameraZ = 0.001;
 var cameraX = characterX + relcameraX, cameraY = characterY + relcameraY, cameraZ = characterZ + relcameraZ;
 var cameraDirX = 0, cameraDirY = 0, cameraDirZ = -1;
@@ -279,7 +279,9 @@ var imgpath = ["../external/UFO/textures/UFO_color2.jpg", "../external/solar-sys
 var solarScale = 0.5;
 var textures = {};
 var isFirst = true;
-var v = 0.05;
+const originV = 0.01;
+const scrum = 0.5;
+var v = originV;
 var onW = false;
 var onS = false;
 
@@ -355,8 +357,8 @@ async function main(){
 
     var tick = function() {
       rotateAngle += 0.45;
-      earthSelfRotateAngle += 1;
-      earthRotateAngle += 0.0/(365.0 * 360.0);
+      earthSelfRotateAngle += 10.0;
+      earthRotateAngle += 10.0/(365.0 * 360.0);
       let rotateMatrix = new Matrix4();
       rotateMatrix.setRotate(angleX, 0, 1, 0);//for mouse rotation
       rotateMatrix.rotate(angleY, 1, 0, 0);//for mouse rotation
@@ -371,7 +373,8 @@ async function main(){
         characterX -= (newViewDir.elements[0] * v);
         characterY -= (newViewDir.elements[1] * v);
         characterZ -= (newViewDir.elements[2] * v);
-      }      
+      }
+      // console.log("X " + characterX + "Y " + characterY + "Z " + characterZ);      
       draw();
       requestAnimationFrame(tick);
     }
@@ -416,7 +419,7 @@ function draw(){
   }
 
   let vpMatrix = new Matrix4();
-  vpMatrix.setPerspective(70, 1, 0.0001, 150);
+  vpMatrix.setPerspective(70, canvas.width/canvas.height, 0.0001, 300);
   vpMatrix.lookAt(cameraX, cameraY, cameraZ,   
                   lookAtPosX, 
                   lookAtPosY,
@@ -424,7 +427,7 @@ function draw(){
                   0, 1, 0);
 
   var vpFromCamera = new Matrix4();
-  vpFromCamera.setPerspective(70, 1, 0.0001, 150);
+  vpFromCamera.setPerspective(70, canvas.width/canvas.height, 0.0001, 300);
   var viewMatrixRotationOnly = new Matrix4();
   viewMatrixRotationOnly.lookAt(cameraX, cameraY, cameraZ, 
                                 lookAtPosX,
@@ -453,15 +456,16 @@ function drawRegularObjects(vpMatrix){
   ufoMdl.rotate(rotateAngle, 0, 1, 0);
   ufoMdl.scale(0.0001, 0.0001, 0.0001);
   
-  // var solarMdl = new Matrix4(); 
+  var solarMdl = new Matrix4(); 
+  solarMdl.setIdentity();
   // solarMdl.setScale(solarScale, solarScale, solarScale);
 
   drawOneRegularObject(ufoObj, ufoMdl, vpMatrix, textures["UFO"], 0, textures["UFOnmap"]);
 
-  drawSolarSystem(vpMatrix);
+  drawSolarSystem(vpMatrix, solarMdl);
 }
 
-function drawSolarSystem(vpMatrix)
+function drawSolarSystem(vpMatrix, mdlMatrix)
 {
   gl.useProgram(program);
   let mvpMatrix = new Matrix4();
@@ -480,18 +484,19 @@ function drawSolarSystem(vpMatrix)
   for( let i=0; i < solarSystemObj.length; i ++ )
   {
     mvpMatrix.set(vpMatrix);
-    var planetModelMatrix = new Matrix4();
+    var planetModelMatrix = new Matrix4(mdlMatrix);
     // planetModelMatrix.setScale(solarScale, solarScale, solarScale);
     var oldPos = new Vector3([disToCenter[imgNames[i + 1]], 0.0, 0.0]);
-    planetModelMatrix.rotate(planetSelfRotateArg[imgNames[i + 1]] * earthSelfRotateAngle, 0, 1 ,0);
+    planetModelMatrix.rotate(planetRotateArg[imgNames[i + 1]] * earthRotateAngle + planetSelfRotateArg[imgNames[i + 1]] * earthSelfRotateAngle, 0, 1 ,0);
     var dirRotateMatrix = new Matrix4(planetModelMatrix);
     dirRotateMatrix.rotate(-2 * planetSelfRotateArg[imgNames[i + 1]] * earthSelfRotateAngle, 0, 1 ,0)
     var newPos = dirRotateMatrix.multiplyVector3(oldPos);
     var delta = new Vector3([newPos.elements[0] - oldPos.elements[0], newPos.elements[1] -  oldPos.elements[1] , newPos.elements[2] - oldPos.elements[2] ]);
     planetModelMatrix.translate(delta.elements[0], delta.elements[1], delta.elements[2]);
+    
     mvpMatrix.multiply(planetModelMatrix);
     normalMatrix.setInverseOf(planetModelMatrix);
-    normalMatrix.transpose();  
+    normalMatrix.transpose();
 
     gl.uniformMatrix4fv(program.u_MvpMatrix, false, mvpMatrix.elements);
     gl.uniformMatrix4fv(program.u_modelMatrix, false, planetModelMatrix.elements);
@@ -924,14 +929,14 @@ function keydown(ev){
   //implment keydown event here
   if(ev.key == 'w' || ev.key == 'W') onW = true;
   else if(ev.key == 's' || ev.key == 'S') onS = true;
-  else if(ev.key == 'Shift')    v = 0.5;
+  else if(ev.key == 'Shift')    v = scrum;
   else if(ev.key == '1')        isFirst = true;
   else if(ev.key == '3')        isFirst = false;
   draw();
 }
 
 function keyup(ev){
-  if(ev.key == 'Shift') v = 0.5;
+  if(ev.key == 'Shift') v = originV;
   else if(ev.key == 'w' || ev.key == 'W')  onW = false;
   else if(ev.key == 's' || ev.key == 'S')  onS = false; 
 }
@@ -1000,7 +1005,7 @@ function renderCubeMap(camX, camY, camZ)
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     let vpMatrix = new Matrix4();
-    vpMatrix.setPerspective(90, 1, 1, 150);
+    vpMatrix.setPerspective(90, 1, 1, 300);
     vpMatrix.lookAt(camX, camY, camZ,   
                     camX + ENV_CUBE_LOOK_DIR[side][0], 
                     camY + ENV_CUBE_LOOK_DIR[side][1],

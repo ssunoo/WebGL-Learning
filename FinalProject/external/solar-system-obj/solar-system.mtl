@@ -1,102 +1,112 @@
-# Blender MTL File: 'None'
-# Material Count: 10
+# Blender 3.1.0 MTL File: 'None'
+# www.blender.org
 
 newmtl Earth
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
+Ns 96.078415
+Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.012549 0.012549 0.012549
+Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd Rc86fd1d073eb8cee76c6e79ed89c15bc.png
+map_Kd  D:\snow\GLSL\FinalProject\external\solar-system-obj\Rc86fd1d073eb8cee76c6e79ed89c15bc.png
 
 newmtl Jupiter
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
+Ns 96.078415
+Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.012549 0.012549 0.012549
+Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd OIP (42).jpeg
+map_Kd  D:\snow\GLSL\FinalProject\external\solar-system-obj\OIP (42).jpeg
 
 newmtl Mars
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
+Ns 96.078415
+Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.012549 0.012549 0.012549
+Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd OIP (36).jpeg
+map_Kd  D:\snow\GLSL\FinalProject\external\solar-system-obj\OIP (36).jpeg
 
 newmtl Mecury
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
+Ns 96.078415
+Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.012549 0.012549 0.012549
+Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd download (18).jpeg
+map_Kd  D:\snow\GLSL\FinalProject\external\solar-system-obj\download (18).jpeg
 
 newmtl Neptune
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
+Ns 96.078415
+Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.012549 0.012549 0.012549
+Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd OIP (41).jpeg
+map_Kd  D:\snow\GLSL\FinalProject\external\solar-system-obj\OIP (41).jpeg
 
 newmtl Rings
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
+Ns 96.078415
+Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.012549 0.012549 0.012549
+Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd OIP (43).jpeg
+map_Kd  D:\snow\GLSL\FinalProject\external\solar-system-obj\OIP (43).jpeg
 
 newmtl Saturn
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
+Ns 96.078415
+Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.012549 0.012549 0.012549
+Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd OIP (39).jpeg
+map_Kd  D:\snow\GLSL\FinalProject\external\solar-system-obj\OIP (39).jpeg
 
 newmtl Sun
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
+Ns 96.078415
+Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.012549 0.012549 0.012549
+Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd OIP (38).jpeg
+map_Kd  D:\snow\GLSL\FinalProject\external\solar-system-obj\OIP (38).jpeg
 
 newmtl Uranus
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
+Ns 96.078415
+Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.012549 0.012549 0.012549
+Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd OIP (40).jpeg
+map_Kd  D:\snow\GLSL\FinalProject\external\solar-system-obj\OIP (40).jpeg
 
 newmtl Venus
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
+Ns 96.078415
+Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
 Ks 0.012549 0.012549 0.012549
+Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd OIP (37).jpeg
+map_Kd  D:\snow\GLSL\FinalProject\external\solar-system-obj\OIP (37).jpeg
