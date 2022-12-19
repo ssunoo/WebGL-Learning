@@ -259,7 +259,7 @@ var earthSelfRotateAngle = 0.0
 var earthRotateAngle = 0.0;
 var fbo;
 var offScreenWidth = 256, offScreenHeight = 256; //for cubemap render
-var imgNames = ["UFO", "Uranus", "Mecury", "Rings", "Saturn", "Sun", "Jupiter", "Neptune", "Mars", "Venus", "Earth", "UFOnmap"];
+var imgNames = ["UFO", "Uranus", "Mecury", "Rings", "Saturn", "Sun", "Jupiter", "Neptune", "Mars", "Venus", "Earth", "UFOnmap", "UI"];
 var planetSelfRotateArg = {"Uranus": 0.99726968/-0.71833, "Mecury": 0.99726968/58.6462, "Rings": 0.99726968 / 0.426, "Saturn": 0.99726968 / 0.426,
  "Sun": 0.99726968 / 25.379995, "Jupiter": 0.99726968 / 0.41007, "Neptune": 0.99726968/0.67125, "Mars": 0.99726968/	1.02595675,
  "Venus": 0.99726968/-243.0187, "Earth" : 1.0}
@@ -274,7 +274,8 @@ var imgpath = ["../external/UFO/textures/UFO_color2.jpg", "../external/solar-sys
 "../external/solar-system-obj/OIP (39).jpeg", "../external/solar-system-obj/OIP (38).jpeg",
 "../external/solar-system-obj/OIP (42).jpeg", "../external/solar-system-obj/OIP (41).jpeg",
 "../external/solar-system-obj/OIP (36).jpeg", "../external/solar-system-obj/OIP (37).jpeg",
-"../external/solar-system-obj/Rc86fd1d073eb8cee76c6e79ed89c15bc.png", "../external/UFO/textures/UFO_nmap.jpg"
+"../external/solar-system-obj/Rc86fd1d073eb8cee76c6e79ed89c15bc.png", "../external/UFO/textures/UFO_nmap.jpg",
+"../external/ui.jpg"
 ];
 var solarScale = 0.5;
 var textures = {};
@@ -284,6 +285,10 @@ const scrum = 0.5;
 var v = originV;
 var onW = false;
 var onS = false;
+var rotateV = 1;
+var revolutionV = 1;
+var planetRotate = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+var planetRevolution = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 
 async function main(){
     canvas = document.getElementById('webgl');
@@ -317,6 +322,7 @@ async function main(){
     program.u_Sampler0 = gl.getUniformLocation(program, "u_Sampler0");
     program.u_Sampler1 = gl.getUniformLocation(program, "u_Sampler1");
     program.u_isEmission = gl.getUniformLocation(program, "u_isEmission");
+    program.u_isFirstPerspective = gl.getUniformLocation(program, "u_isFirstPerspective");
     program.u_normalMode = gl.getUniformLocation(program, 'u_normalMode');
 
     programTextureOnCube = compileShader(gl, VSHADER_SOURCE_TEXTURE_ON_CUBE, FSHADER_SOURCE_TEXTURE_ON_CUBE);
@@ -355,10 +361,24 @@ async function main(){
     document.onkeydown = function(ev){keydown(ev)};
     document.onkeyup = function(ev){keyup(ev)};
 
+    var slider1 = document.getElementById("rotate");
+    slider1.oninput = function() {
+        rotateV = this.value;
+        draw();
+    }
+
+    var slider2 = document.getElementById("revolution");
+    slider2.oninput = function() {
+        revolutionV = this.value; 
+        draw();
+    }
+
+
     var tick = function() {
       rotateAngle += 0.45;
-      earthSelfRotateAngle += 10.0;
-      earthRotateAngle += 10.0/(365.0 * 360.0);
+      // earthSelfRotateAngle = (earthRotateAngle + rotateV) % 360;
+      // console.log(earthRotateAngle);
+      // earthRotateAngle = (earthRotateAngle + revolutionV/(365 * 360)) % 360;
       let rotateMatrix = new Matrix4();
       rotateMatrix.setRotate(angleX, 0, 1, 0);//for mouse rotation
       rotateMatrix.rotate(angleY, 1, 0, 0);//for mouse rotation
@@ -401,6 +421,7 @@ function draw(){
   var lookAtPosX, lookAtPosY, lookAtPosZ;
   if(!isFirst)
   {
+    gl.uniform1i(program.u_isFirstPerspective, 0);
     cameraX = newcameraDir.elements[0] + characterX;
     cameraY = newcameraDir.elements[1] + characterY;
     cameraZ = newcameraDir.elements[2] + characterZ;
@@ -410,6 +431,7 @@ function draw(){
   }
   else
   {
+    gl.uniform1i(program.u_isFirstPerspective, 1);
     cameraX = 1.5 * newViewDir.elements[0] + characterX;
     cameraY = 1.5 * newViewDir.elements[1] + characterY;
     cameraZ = 1.5 * newViewDir.elements[2] + characterZ;
@@ -480,16 +502,17 @@ function drawSolarSystem(vpMatrix, mdlMatrix)
   gl.uniform1f(program.u_Ks, 1.0);
   gl.uniform1f(program.u_shininess, 10.0);
   // gl.uniform3f(program.u_Color, colorR, colorG, colorB);
-
   for( let i=0; i < solarSystemObj.length; i ++ )
   {
+    planetRotate[i] = (planetRotate[i] + planetSelfRotateArg[imgNames[i + 1]] * rotateV) % 360; 
+    planetRevolution[i] = (planetRevolution[i] + (planetRotateArg[imgNames[i + 1]] * revolutionV)/(365 * 360)) % 360; 
     mvpMatrix.set(vpMatrix);
     var planetModelMatrix = new Matrix4(mdlMatrix);
     // planetModelMatrix.setScale(solarScale, solarScale, solarScale);
     var oldPos = new Vector3([disToCenter[imgNames[i + 1]], 0.0, 0.0]);
-    planetModelMatrix.rotate(planetRotateArg[imgNames[i + 1]] * earthRotateAngle + planetSelfRotateArg[imgNames[i + 1]] * earthSelfRotateAngle, 0, 1 ,0);
+    planetModelMatrix.rotate(planetRotate[i] + planetRevolution[i], 0, 1 ,0);
     var dirRotateMatrix = new Matrix4(planetModelMatrix);
-    dirRotateMatrix.rotate(-2 * planetSelfRotateArg[imgNames[i + 1]] * earthSelfRotateAngle, 0, 1 ,0)
+    dirRotateMatrix.rotate(-2 * planetRotate[i], 0, 1 ,0)
     var newPos = dirRotateMatrix.multiplyVector3(oldPos);
     var delta = new Vector3([newPos.elements[0] - oldPos.elements[0], newPos.elements[1] -  oldPos.elements[1] , newPos.elements[2] - oldPos.elements[2] ]);
     planetModelMatrix.translate(delta.elements[0], delta.elements[1], delta.elements[2]);
